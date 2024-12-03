@@ -14,7 +14,7 @@ class TransaksiController extends Controller
     {
         $transaksi = Transaksi::orderBy('tanggal_pembelian','DESC')->get();
 
-        return view('transaksi.index');
+        return view('transaksi.index',compact('transaksi'));
     }
 
     public function create()
@@ -70,7 +70,7 @@ class TransaksiController extends Controller
     public function edit($id)
     {
         $transaksi = Transaksi::findOrFail($id);
-        return view('transaksi.edit',);
+        return view('transaksi.edit',compact('transaksi'));
     }
 
     public function update(Request $request,$id)
