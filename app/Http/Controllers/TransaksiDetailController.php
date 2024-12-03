@@ -14,20 +14,20 @@ class TransaksiDetailController extends Controller
     {
         $transaksidetail = TransaksiDetail::with('transaksi')->orderBy('id','DESC')->get();
 
-        return view('transaksidetail.index', );
+        return view('transaksidetail.index', compact('transaksidetail'));
     }
 
     public function detail(Request $request)
     {
         $transaksi = Transaksi::with('transaksidetail')->findOrFail($request->id_transaksi);
 
-        return view('transaksidetail.detail', );
+        return view('transaksidetail.detail', compact('transaksi'));
     }
 
     public function edit($id)
     {
         $transaksidetail = TransaksiDetail::findOrFail($id);
-        return view('transaksidetail.edit', );
+        return view('transaksidetail.edit', compact('transaksidetail'));
     }
 
     public function update(Request $request, $id)
@@ -38,15 +38,19 @@ class TransaksiDetailController extends Controller
             'jumlah' => 'required|numeric',
         ]);
 
+        $transaksidetail = TransaksiDetail::findOrFail($id);
+        $transaksi = Transaksi::findOrFail($transaksidetail->id_transaksi);
+
         // Gunakan transaction
         try {
             $transaksidetail->nama_produk = $request->input('nama_produk');
             $transaksidetail->harga_satuan = $request->input('harga_satuan');
             $transaksidetail->jumlah = $request->input('jumlah');
-            $transaksidetail->subtotal = harga_satuan * jumlah
+            $transaksidetail->subtotal = $transaksidetail->harga_satuan * $transaksidetail->jumlah;
+            $transaksidetail->save();
 
-            $transaksi->total_harga = sum subtotal
-            $transaksi->kembalian = bayar - total_harga; // hapus rumus
+            $total_harga = $transaksi->transaksidetail->sum('subtotal');
+            $transaksi->kembalian = $transaksidetail->bayar - $total_harga; // hapus rumus
 
             return redirect('transaksidetail/'.$transaksidetail->id_transaksi)->with('pesan', 'Berhasil mengubah data');
         } catch (\Exception $e) {
@@ -55,13 +59,15 @@ class TransaksiDetailController extends Controller
         }
     }
 
-    public function destroy()
+    public function destroy($id)
     {
         $transaksidetail = TransaksiDetail::findOrFail($id);
 
+        $transaksidetail->delete();
+
         $transaksi = Transaksi::with('transaksidetail')->findOrFail($transaksidetail->id_transaksi);
-        $transaksi->total_harga = sum subtotal;
-        $transaksi->kembalian = bayar - total_harga;
+        $total_harga = $transaksi->transaksidetail->sum('subtotal');
+        $transaksi->kembalian = $transaksidetail->bayar - $total_harga;
         $transaksi->save();
 
         return redirect('transaksidetail/'.$transaksidetail->id_transaksi)->with('pesan', 'Berhasil menghapus data');
