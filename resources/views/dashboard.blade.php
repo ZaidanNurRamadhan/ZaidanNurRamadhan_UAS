@@ -1,4 +1,5 @@
-
+@extends('layouts')
+@section('content')
 <div class="d-flex flex-column gap-4">
     <div class="card">
         <div class="card-header">SUMMARY</div>
@@ -16,7 +17,7 @@
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">Jumlah Item Terjual</h5>
-                            <h4><span class="badge text-bg-secondary">{{$sum}}</span></h4>
+                            <h4><span class="badge text-bg-secondary">{{$sumItem}}</span></h4>
                         </div>
                     </div>
                 </div>
@@ -24,7 +25,7 @@
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">Omzet</h5>
-                            <h4><span class="badge text-bg-secondary">{{$total}}</span></h4>
+                            <h4><span class="badge text-bg-secondary">{{$total_harga}}</span></h4>
                         </div>
                     </div>
                 </div>
@@ -43,3 +44,4 @@
         </div>
     </div>
 </div>
+@endsection
